@@ -161,7 +161,9 @@ class ThreadedRunner(object):
 
         # Start threads
         self.start_time = time.time()
-        [t.start() for t in threads]
+        for t in threads:
+            time.sleep(2)
+            t.start()
 
         # Stay idle until killed by SIGINT or a global stop condition is met.
         try:
@@ -182,7 +184,7 @@ class ThreadedRunner(object):
         self.global_should_stop = True
 
         # Join threads
-        [t.join() for t in threads]
+        [t.join(10) for t in threads]
         print('All threads stopped')
 
 
