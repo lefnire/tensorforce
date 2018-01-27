@@ -516,13 +516,14 @@ class Model(object):
         # tf.train.NanTensorHook(loss_tensor, fail_on_nan_loss=True)
         # tf.train.ProfilerHook(save_steps=None, save_secs=None, output_dir='', show_dataflow=True, show_memory=False)
 
+        session_config = tf.ConfigProto(gpu_options=tf.GPUOptions(per_process_gpu_memory_fraction=.9/2))
         if self.distributed_spec is None:
             # TensorFlow non-distributed monitored session object
             self.monitored_session = tf.train.SingularMonitoredSession(
                 hooks=hooks,
                 scaffold=self.scaffold,
                 master='',  # Default value.
-                config=None,  # self.distributed_spec.get('session_config'),
+                config=session_config,
                 checkpoint_dir=None
             )
 
