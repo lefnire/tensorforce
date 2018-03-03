@@ -1080,7 +1080,7 @@ class InternalLstm(Layer):
     Long short-term memory layer for internal state management.
     """
 
-    def __init__(self, size, dropout=None, scope='internal_lstm', summary_labels=()):
+    def __init__(self, size, dropout=None, scope='internal_lstm', summary_labels=(), cell_clip=None, use_peepholes=False):
         """
         LSTM layer.
 
@@ -1090,6 +1090,8 @@ class InternalLstm(Layer):
         """
         self.size = size
         self.dropout = dropout
+        self.cell_clip = cell_clip
+        self.use_peepholes = use_peepholes
         super(InternalLstm, self).__init__(scope=scope, summary_labels=summary_labels)
 
     def tf_apply(self, x, update, state):
@@ -1100,7 +1102,7 @@ class InternalLstm(Layer):
 
         state = tf.contrib.rnn.LSTMStateTuple(c=state[:, 0, :], h=state[:, 1, :])
 
-        self.lstm_cell = tf.contrib.rnn.LSTMCell(num_units=self.size)
+        self.lstm_cell = tf.contrib.rnn.LSTMCell(num_units=self.size, cell_clip=self.cell_clip, use_peepholes=self.use_peepholes)
 
         if self.dropout is not None:
             keep_prob = tf.cond(pred=update, true_fn=(lambda: 1.0 - self.dropout), false_fn=(lambda: 1.0))
